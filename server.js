@@ -20,7 +20,11 @@ app.get('/', (req, res) => {
 
 // Routes
 const userRoutes = require('./routes/userRoutes');
+const authRoutes = require('./routes/authRoutes');
+const walletRoutes = require('./routes/walletRoutes');
 app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/wallet', walletRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
