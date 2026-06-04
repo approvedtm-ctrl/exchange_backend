@@ -47,9 +47,9 @@ const createPayment = async (req, res) => {
             api_key: process.env.PLISIO_API_KEY,
             order_number: orderId,
             order_name: `Deposit for User ${userId}`,
-            amount: amount,
-            currency: currency,
-            source_currency: 'ETH_BASE',
+            source_amount: amount,
+            source_currency: 'USD',
+            currency: 'ETH_BASE',
             callback_url: `${process.env.BACKEND_URL}/api/wallet/ipn?json=true`,
             success_url: `${process.env.FRONTEND_URL}/wallet/success`,
             fail_url: `${process.env.FRONTEND_URL}/wallet/failed`,
@@ -99,7 +99,7 @@ const handleIPN = async (req, res) => {
             return res.status(400).send('Invalid signature');
         }
 
-        const { txn_id, status, amount, currency } = req.body;
+        const { txn_id, status, amount, currency, source_amount } = req.body;
 
         const deposit = await Deposit.findByPaymentId(txn_id);
         if (!deposit) {
@@ -113,7 +113,9 @@ const handleIPN = async (req, res) => {
             // If payment is completed or mismatch (partially paid), update user balance
             // Plisio statuses: completed, mismatch
             if (status === 'completed' || status === 'mismatch') {
-                await Wallet.updateBalance(deposit.user_id, amount);
+                // Use source_amount (USD) for balance update if available
+                const creditAmount = source_amount || amount;
+                await Wallet.updateBalance(deposit.user_id, creditAmount);
             }
         }
 
