@@ -39,7 +39,7 @@ const getBalance = async (req, res) => {
 
 const createPayment = async (req, res) => {
     try {
-        const { amount, currency = 'USD' } = req.body;
+        const { amount, currency = 'ETH_BASE' } = req.body;
         const userId = req.user.id;
         const orderId = `ORDER-${userId}-${Date.now()}`;
 
