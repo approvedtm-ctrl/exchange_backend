@@ -39,7 +39,7 @@ const getBalance = async (req, res) => {
 
 const createPayment = async (req, res) => {
     try {
-        const { amount, currency = 'ETH_BASE' } = req.body;
+        const { amount, currency = 'USD' } = req.body;
         const userId = req.user.id;
         const orderId = `ORDER-${userId}-${Date.now()}`;
 
@@ -49,6 +49,7 @@ const createPayment = async (req, res) => {
             order_name: `Deposit for User ${userId}`,
             amount: amount,
             currency: currency,
+            source_currency: 'ETH_BASE',
             callback_url: `${process.env.BACKEND_URL}/api/wallet/ipn?json=true`,
             success_url: `${process.env.FRONTEND_URL}/wallet/success`,
             fail_url: `${process.env.FRONTEND_URL}/wallet/failed`,
